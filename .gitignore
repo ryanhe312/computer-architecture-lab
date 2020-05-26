@@ -1,5 +1,8 @@
 *.cache/
 *.hw/
-*.ip_user_file/
+*.sim/
+*.ip_user_files/
 *.runs/
 *.xpr
+*.jou
+*.log
