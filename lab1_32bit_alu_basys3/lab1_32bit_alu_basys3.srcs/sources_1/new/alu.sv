@@ -27,11 +27,13 @@ module alu(
     output  logic           zero
 );
 
-    logic [31:0] bb =  alucont[2]?~b:b;//mux F2;
-    logic [32:0] s = {1'b0,a} + {1'b0,bb} + {32'b0,alucont[2]};//adder;
+    logic [31:0] bb;
+    logic [32:0] s;
 
     always_comb
     begin
+        bb =  alucont[2]?~b:b;//mux F2;
+        s = {1'b0,a} + {1'b0,bb} + {32'b0,alucont[2]};//adder;
         case(alucont[1:0])//mux F0:1
             3'b00:     result = a & bb;             //result = a and b/~b
             3'b01:     result = a | bb;             //result = a or b/~b
