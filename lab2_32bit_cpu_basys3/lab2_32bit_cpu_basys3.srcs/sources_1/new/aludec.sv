@@ -22,14 +22,17 @@
 
 module aludec(
     input logic [5:0] funct,
-    input logic [1:0] aluop,
+    input logic [2:0] aluop,//new op digit for imm
     output logic [2:0] alucontrol
 );
 
     always_comb
         case(aluop)
-            2'b00:  alucontrol <= 3'b010;//add (for lw/sw/addi)
-            2'b01:  alucontrol <= 3'b110;//sub (for beq)
+            3'b000:  alucontrol <= 3'b010;//add (for lw/sw/addi)
+            3'b001:  alucontrol <= 3'b110;//sub (for beq/bne)
+            3'b100:  alucontrol <= 3'b000;//and (for andi)
+            3'b101:  alucontrol <= 3'b001;//or  (for ori )
+            3'b111:  alucontrol <= 3'b111;//slt (for slti)
             default: case(funct)
                 6'b100000:  alucontrol <= 3'b010;//add
                 6'b100010:  alucontrol <= 3'b110;//sub

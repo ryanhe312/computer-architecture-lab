@@ -26,18 +26,18 @@ module mips(
     output logic memwrite,
     output logic [31:0] pc,aluout,writedata
 );
-    logic memtoreg,alusrc,regdst,regwrite,jump,pcsrc,zero;
+    logic memtoreg,alusrc,regdst,regwrite,jump,pcsrc,zero,immext;//new immext
     logic [2:0] alucontrol;
     
     controller c(.op(instr[31:26]),.funct(instr[5:0]),.zero(zero),
                 .memtoreg(memtoreg),.memwrite(memwrite),.pcsrc(pcsrc),
                 .alusrc(alusrc),.regdst(regdst),.regwrite(regwrite),
-                .jump(jump),.alucontrol(alucontrol));
+                .jump(jump),.alucontrol(alucontrol),.immext(immext));//new immext
 
     datapath dp(.clk(clk),.reset(reset),.memtoreg(memtoreg),
                 .pcsrc(pcsrc),.alusrc(alusrc),.regdst(regdst),
                 .regwrite(regwrite),.jump(jump),.alucontrol(alucontrol),
-                .zero(zero),.pc(pc),.instr(instr),
+                .zero(zero),.pc(pc),.instr(instr),.immext(immext),//new immext
                 .aluout(aluout),.writedata(writedata),.readdata(readdata));
 
 endmodule
