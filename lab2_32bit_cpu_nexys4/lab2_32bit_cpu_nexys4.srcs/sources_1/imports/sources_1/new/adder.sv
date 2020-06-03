@@ -3,9 +3,9 @@
 // Company: 
 // Engineer: 
 // 
-// Create Date: 05/31/2020 09:42:27 AM
+// Create Date: 05/28/2020 10:33:13 AM
 // Design Name: 
-// Module Name: board_top
+// Module Name: adder
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
@@ -20,7 +20,9 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module board_top(
-
-    );
+module adder(
+    input logic [31:0] a,b,
+    output logic [31:0] y
+);
+    assign y=a+b;
 endmodule
