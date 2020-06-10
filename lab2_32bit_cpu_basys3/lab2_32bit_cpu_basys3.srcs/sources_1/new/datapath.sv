@@ -31,6 +31,7 @@ module datapath(
 
     logic [4:0] writereg;
     logic [31:0] pcnext,pcnextbr,pcplus4,pcbranch;//pc
+    logic [15:0] ies,ie0;
     logic [31:0] signimm,zeroimm,imm,signimmsh,srca,srcb,result;//alu //new immext
 
     //next PC logic
@@ -47,9 +48,10 @@ module datapath(
     mux2#(32)   resmux(.d0(aluout),.d1(readdata),.s(memtoreg),.y(result));
     
     //ALU logic
-    signext     se(.a(instr[15:0]),.y(signimm));
-    zeroext     ze(.a(instr[15:0]),.y(zeroimm));//new immext
-    mux2#(32)   immmux(.d0(signimm),.d1(zeroimm),.s(immext),.y(imm));//new immext   
+    dmux#(16)   extDmux(.data(instr[15:0]), .s(immext), .y0(ies), .y1(ie0));
+    zeroext     ze(ie0, zeroimm);//new immext
+    signext     se(ies, signimm);
+    mux2#(32)   extmux(.d0(signimm), .d1(zeroimm), .s(immext), .y(imm));//new immext   
     mux2#(32)   srcbmux(.d0(writedata),.d1(imm),.s(alusrc),.y(srcb));
     alu         alu(.a(srca),.b(srcb),.alucont(alucontrol),.result(aluout),.zero(zero));
 

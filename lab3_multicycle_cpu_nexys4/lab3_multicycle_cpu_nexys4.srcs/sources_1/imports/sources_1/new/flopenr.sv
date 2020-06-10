@@ -3,9 +3,9 @@
 // Company: 
 // Engineer: 
 // 
-// Create Date: 05/28/2020 10:27:45 AM
+// Create Date: 06/09/2020 09:17:11 AM
 // Design Name: 
-// Module Name: regfile
+// Module Name: flopenr
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
@@ -20,19 +20,15 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module regfile(
-    input logic clk,
-    input logic we3,
-    input logic [4:0] ra1,ra2,wa3,
-    input logic [31:0] wd3,
-    output logic [31:0] rd1,rd2
-);
-
-    logic [31:0] rf [31:0];
-    always_ff@(posedge clk)
-        if(we3) rf[wa3] <= wd3;
-       
-    assign rd1 = (ra1!=0)?rf[ra1]:0;
-    assign rd2 = (ra2!=0)?rf[ra2]:0;
+module flopenr #(parameter WIDTH = 8) (
+    input   logic               clk, reset,
+    input   logic               en,
+    input   logic [WIDTH-1:0]   d,
+    output  logic [WIDTH-1:0]   q
+    );
+    
+    always_ff @(posedge clk, posedge reset)
+    if(reset)   q <= 0;
+    else if(en) q <= d;
     
 endmodule

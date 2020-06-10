@@ -3,9 +3,9 @@
 // Company: 
 // Engineer: 
 // 
-// Create Date: 05/28/2020 10:27:45 AM
+// Create Date: 06/10/2020 10:02:30 AM
 // Design Name: 
-// Module Name: regfile
+// Module Name: dmux
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
@@ -20,19 +20,14 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module regfile(
-    input logic clk,
-    input logic we3,
-    input logic [4:0] ra1,ra2,wa3,
-    input logic [31:0] wd3,
-    output logic [31:0] rd1,rd2
-);
-
-    logic [31:0] rf [31:0];
-    always_ff@(posedge clk)
-        if(we3) rf[wa3] <= wd3;
-       
-    assign rd1 = (ra1!=0)?rf[ra1]:0;
-    assign rd2 = (ra2!=0)?rf[ra2]:0;
+module dmux #(parameter WIDTH = 8)(
+    input   logic [WIDTH-1:0]   data,
+    input   logic s,
+    output  logic [WIDTH-1:0]   y0, y1
+    );
+    
+    assign y0 = (s == 0) ? data : 0;
+    assign y1 = (s == 1) ? data : 0;
     
 endmodule
+

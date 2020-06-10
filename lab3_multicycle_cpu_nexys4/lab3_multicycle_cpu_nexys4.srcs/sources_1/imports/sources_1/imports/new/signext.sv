@@ -3,9 +3,9 @@
 // Company: 
 // Engineer: 
 // 
-// Create Date: 05/28/2020 10:27:45 AM
+// Create Date: 05/28/2020 10:36:30 AM
 // Design Name: 
-// Module Name: regfile
+// Module Name: signext
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
@@ -20,19 +20,9 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module regfile(
-    input logic clk,
-    input logic we3,
-    input logic [4:0] ra1,ra2,wa3,
-    input logic [31:0] wd3,
-    output logic [31:0] rd1,rd2
+module signext(
+    input   logic [15:0] a,
+    output  logic [31:0] y
 );
-
-    logic [31:0] rf [31:0];
-    always_ff@(posedge clk)
-        if(we3) rf[wa3] <= wd3;
-       
-    assign rd1 = (ra1!=0)?rf[ra1]:0;
-    assign rd2 = (ra2!=0)?rf[ra2]:0;
-    
+    assign y = {{16{a[15]}},a};
 endmodule
