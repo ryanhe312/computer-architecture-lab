@@ -26,22 +26,22 @@ module controller(
 	input logic zero,
 	output logic iord,memwrite,irwrite,
 	output logic regdst,memtoreg,regwrite,
-	output logic alusrca,
+	output logic alusrca,immext,
 	output logic [1:0] alusrcb,
 	output logic [2:0] alucontrol,
 	output logic [1:0] pcsrc,
 	output logic pcen
 );
 
-	logic [1:0]	aluop;
+	logic [2:0]	aluop;
 	logic branch, pcwrite;
 	
 	maindec		md(.clk(clk), .reset(reset), .op(op), .pcwrite(pcwrite), 
 					.memwrite(memwrite), .irwrite(irwrite), .regwrite(regwrite), 
 					.alusrca(alusrca), .branch(branch), .iord(iord), .memtoreg(memtoreg), 
-					.regdst(regdst), .alusrcb(alusrcb), .pcsrc(pcsrc), .aluop(aluop));
+					.regdst(regdst), .alusrcb(alusrcb), .pcsrc(pcsrc), .aluop(aluop),.immext(immext));
 	aludec		ad(.funct(funct), .aluop(aluop), .alucontrol(alucontrol));
 	
-	assign pcen = (branch & zero) | pcwrite;
+	assign pcen = ((branch & zero) | ((op == 6'b000101) & (~zero))) | pcwrite;
 
 endmodule

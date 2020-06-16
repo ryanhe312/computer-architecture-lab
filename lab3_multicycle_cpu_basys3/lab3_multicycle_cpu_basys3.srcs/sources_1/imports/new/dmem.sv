@@ -29,6 +29,8 @@ module dmem(
     
     initial 
             $readmemh("memfile.dat",RAM);
+            //$readmemh("memtest.dat",RAM);
+            //$readmemh("io.dat",RAM);
     
     assign rd = RAM[a[31:2]];//word aligned
     

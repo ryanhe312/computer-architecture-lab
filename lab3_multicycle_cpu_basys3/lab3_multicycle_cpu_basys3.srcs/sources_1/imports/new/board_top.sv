@@ -21,41 +21,21 @@
 
 
 module board_top(
-    input logic [15:0] sw,
-    input logic clk,
-    input logic btnU,//display
-    input logic btnD,//reset
-    output logic [6:0] seg,
-    output logic [3:0] an,
-    output logic dp
+	input   logic       clk,
+    input   logic       btnC, btnL, btnR, btnU,
+    input   logic [15:0]sw,
+    
+    output  logic [3:0] an,
+    output  logic       dp,
+    output  logic [6:0] seg
 );
 
-    logic [15:0] a = {8'b0,sw[15:8]};
-    logic [15:0] b = {8'b0,sw[7 :0]};
-    logic [31:0] writedata, readdata, dataadr, result;
     logic memwrite;
-
-    mips mips(.clk(clk), .reset(btnD), .memwrite(memwrite), 
-                    .dataadr(dataadr), .writedata(writedata), .readdata(readdata));
-    fakeimem imem(.adr(dataadr),.a(a),.b(b),.rd(readdata));
-    fakedmem dmem(.clk(clk), .we(memwrite), .a(dataadr), .wd(writedata),.result(result)); 
+    logic [31:0] writedata, dataadr, readdata;
     
-    logic [15:0] x;
-    logic [9:0] a_BCD;
-    logic [9:0] b_BCD;
-    logic [9:0] r_BCD;
-    
-    Bin2BCD8bit A2BCD(a[7 :0]       ,a_BCD);
-    Bin2BCD8bit B2BCD(b[7 :0]       ,b_BCD);
-    Bin2BCD8bit R2BCD(result[7:0]   ,r_BCD);
-    
-    always_comb
-    begin
-        case(btnU)
-            1'b0:x={a_BCD[7:0],b_BCD[7:0]};
-            1'b1:x={6'b0,      r_BCD[9:0]};
-        endcase
-    end
-    
-    x7seg X7(.x(x), .clk(clk), .clr(btnD),.a2g(seg), .an(an), .dp(dp));
+    mips mips(.clk(clk), .reset(btnC), .readdata(readdata), 
+                .memwrite(memwrite), .writedata(writedata), .dataadr(dataadr));
+    memorydecoder md(.clk(clk), .writeEN(memwrite), .addr(dataadr), 
+                        .writeData(writedata), .readData(readdata), .IOclock(~clk),
+                        .reset(btnC), .btnL(btnL), .btnR(btnR), .btnU(btnU), .switch(sw), .AN(an), .DP(dp), .A2G(seg));
 endmodule
