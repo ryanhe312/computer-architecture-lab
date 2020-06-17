@@ -22,7 +22,7 @@
 
 module datapath(
     input 	logic		clk, reset, 
-	input	logic		memtoreg, regdst, iord, alusrca,
+	input	logic		memtoreg, regdst, iord, alusrca,immext,
 	input	logic [1:0] alusrcb, pcsrc,
 	input	logic		irwrite, memwrite, regwrite, pcen, 
 	input	logic [2:0] alucontrol, 
@@ -35,7 +35,8 @@ module datapath(
     logic [31:0] data;
     logic [31:0] rega, wd3, rd1, rd2;
     logic [4:0] writereg,ra1,ra2,wr1,wr2;
-    logic [31:0] signimm, signimmsh;
+    logic [15:0] ies,ie0;
+    logic [31:0] signimm,zeroimm, signimmsh,imm;
     logic [31:0] srca, srcb, aluresult, aluout;
     
     assign {ra1,ra2} = instr[25:16];
@@ -68,11 +69,15 @@ module datapath(
     flopr#(32)      rb(.clk(clk), .reset(reset), .d(rd2), .q(writedata));
     
     //pre alu
-    signext         se(.a(instr[15:0]),.y(signimm));
+    dmux#(16)   extDmux(.data(instr[15:0]), .s(immext), .y0(ies), .y1(ie0));
+    zeroext     ze(ie0, zeroimm);
+    signext     se(ies, signimm);
+    mux2#(32)   extmux(.d0(signimm), .d1(zeroimm), .s(immext), .y(imm));
+    
     sl2             immsh(.a(signimm), .y(signimmsh));
     
     mux2#(32)       srcamux(.d0(pc), .d1(rega), .s(alusrca), .y(srca));
-    mux4#(32)       srcbmux(.d0(writedata), .d1(32'b100), .d2(signimm), .d3(signimmsh), 
+    mux4#(32)       srcbmux(.d0(writedata), .d1(32'b100), .d2(imm), .d3(signimmsh), 
                             .s(alusrcb), .y(srcb));
                             
     //alu 

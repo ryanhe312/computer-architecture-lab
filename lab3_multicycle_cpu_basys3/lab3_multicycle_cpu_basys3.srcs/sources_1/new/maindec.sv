@@ -27,7 +27,7 @@ module maindec(
     output  logic       alusrca, branch, iord, memtoreg, regdst, 
     output  logic [1:0] alusrcb, pcsrc,
     output  logic [2:0] aluop,
-    output  logic       immext
+    output  logic       immext,bne
     );
     
     //States
@@ -58,7 +58,7 @@ module maindec(
 	parameter ANDI    	= 6'b001100;
 	parameter ORI     	= 6'b001101;
 	parameter SLTI     = 6'b001010;
-	parameter BNE    	= 6'b001101;
+	parameter BNE    	= 6'b000101;
 	
 	logic [3:0] state, nextstate;
 	logic [16:0] controls;
@@ -104,28 +104,28 @@ module maindec(
 		default:	nextstate = 4'bx;
 	endcase
 	
-	assign {aluop[2],immext,pcwrite, memwrite, irwrite, regwrite, alusrca, branch,
+	assign {bne,aluop[2],immext,pcwrite, memwrite, irwrite, regwrite, alusrca, branch,
 			iord, memtoreg, regdst, alusrcb, pcsrc, aluop[1:0]} = controls;
 	
 	always_comb
 	case(state)
-		FETCH:	controls = 17'h05010;
-		DECODE:	controls = 17'h00030;
-		MEMADR:	controls = 17'h00420;
-		MEMRD:	controls = 17'h00100;
-		MEMWB:	controls = 17'h00880;
-		MEMWR:	controls = 17'h02100;
-		RTYPEEX:controls = 17'h00402;
-		RTYPEWB:controls = 17'h00840;
-		BEQEX:	controls = 17'h00605;
-		ADDIEX:	controls = 17'h00420;
-		ADDIWB:	controls = 17'h00800;
-		JEX:	controls = 17'h04008;
-		ANDIEX:	controls = 17'h18420;
-		ORIEX:	controls = 17'h18421;
-		SLTIEX:	controls = 17'h08423;
-		BNEEX:	controls = 17'h00405;
-		default:controls = 17'hxxxxx;
+		FETCH:	controls = 18'h05010;
+		DECODE:	controls = 18'h00030;
+		MEMADR:	controls = 18'h00420;
+		MEMRD:	controls = 18'h00100;
+		MEMWB:	controls = 18'h00880;
+		MEMWR:	controls = 18'h02100;
+		RTYPEEX:controls = 18'h00402;
+		RTYPEWB:controls = 18'h00840;
+		BEQEX:	controls = 18'h00605;
+		ADDIEX:	controls = 18'h00420;
+		ADDIWB:	controls = 18'h00800;
+		JEX:	controls = 18'h04008;
+		ANDIEX:	controls = 18'h18420;
+		ORIEX:	controls = 18'h18421;
+		SLTIEX:	controls = 18'h10423;
+		BNEEX:	controls = 18'h20405;
+		default:controls = 18'hxxxxx;
 	endcase
     
 endmodule

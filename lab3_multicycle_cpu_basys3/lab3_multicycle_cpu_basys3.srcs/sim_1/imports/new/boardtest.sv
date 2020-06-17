@@ -24,13 +24,15 @@ module boardtest();
     logic [15:0] sw;
     logic clk;
     logic btnU;//display
-    logic btnD;//reset
+    logic btnC;//clear
+    logic btnL;//load 
+    logic btnR;//write
     logic [6:0] seg;
     logic [3:0] an;
     logic dp;
     
     //instantiate device to be tested
-    board_top top(sw,clk, btnU, btnD, seg, an, dp);
+    board_top top(clk, btnC, btnL, btnR, btnU, sw,an, dp,seg);
     
     assign sw = 16'b00001100_00100010;
     
@@ -38,7 +40,9 @@ module boardtest();
     //initialize test
     initial
     begin
-        btnD <= 1; btnU <= 0; #22; btnD <= 0;
+        btnC <= 1; btnU <= 0; #22; btnC <= 0; 
+        #20 btnL <=1; #10 btnL <=0; 
+        #20 btnR <=1; #10 btnR <=0; 
     end
         
     //generate clock to sequence tests

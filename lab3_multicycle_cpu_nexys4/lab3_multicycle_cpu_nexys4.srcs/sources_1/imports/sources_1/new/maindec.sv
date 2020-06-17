@@ -25,7 +25,9 @@ module maindec(
     input   logic [5:0] op,
     output  logic       pcwrite, memwrite, irwrite, regwrite,
     output  logic       alusrca, branch, iord, memtoreg, regdst, 
-    output  logic [1:0] alusrcb, pcsrc,aluop
+    output  logic [1:0] alusrcb, pcsrc,
+    output  logic [2:0] aluop,
+    output  logic       immext,bne
     );
     
     //States
@@ -41,6 +43,10 @@ module maindec(
 	parameter ADDIEX	  = 4'b1001;
 	parameter ADDIWB	  = 4'b1010;
 	parameter JEX		  = 4'b1011;
+	parameter ANDIEX	  = 4'b1100;
+	parameter ORIEX	  = 4'b1101;
+	parameter SLTIEX	  = 4'b1110;
+	parameter BNEEX	  = 4'b1111;
 	
 	//op code
 	parameter LW	    = 6'b100011;
@@ -49,9 +55,13 @@ module maindec(
 	parameter BEQ   	= 6'b000100;
 	parameter ADDI 	= 6'b001000;
 	parameter J		= 6'b000010;
+	parameter ANDI    	= 6'b001100;
+	parameter ORI     	= 6'b001101;
+	parameter SLTI     = 6'b001010;
+	parameter BNE    	= 6'b000101;
 	
 	logic [3:0] state, nextstate;
-	logic [14:0] controls;
+	logic [16:0] controls;
 	
 	always_ff @(posedge clk, posedge reset)
 	if(reset) state <= FETCH;
@@ -67,6 +77,10 @@ module maindec(
 					BEQ:	nextstate = BEQEX;
 					ADDI:	nextstate = ADDIEX;
 					J:		nextstate = JEX;
+					ANDI:	nextstate = ANDIEX;
+					ORI:	nextstate = ORIEX;
+					SLTI:	nextstate = SLTIEX;
+					BNE:	nextstate = BNEEX;
 					default:nextstate = 4'bx;
 				 endcase
 		MEMADR:  case(op)
@@ -83,27 +97,35 @@ module maindec(
 		ADDIEX:		nextstate = ADDIWB;
 		ADDIWB:		nextstate = FETCH;
 		JEX:		nextstate = FETCH;
+		ANDIEX:		nextstate = ADDIWB;
+		ORIEX:		nextstate = ADDIWB;
+		SLTIEX:		nextstate = ADDIWB;
+		BNEEX:		nextstate = FETCH;
 		default:	nextstate = 4'bx;
 	endcase
 	
-	assign {pcwrite, memwrite, irwrite, regwrite, alusrca, branch,
-			iord, memtoreg, regdst, alusrcb, pcsrc, aluop} = controls;
+	assign {bne,aluop[2],immext,pcwrite, memwrite, irwrite, regwrite, alusrca, branch,
+			iord, memtoreg, regdst, alusrcb, pcsrc, aluop[1:0]} = controls;
 	
 	always_comb
 	case(state)
-		FETCH:	controls = 15'h5010;
-		DECODE:	controls = 15'h0030;
-		MEMADR:	controls = 15'h0420;
-		MEMRD:	controls = 15'h0100;
-		MEMWB:	controls = 15'h0880;
-		MEMWR:	controls = 15'h2100;
-		RTYPEEX:controls = 15'h0402;
-		RTYPEWB:controls = 15'h0840;
-		BEQEX:	controls = 15'h0605;
-		ADDIEX:	controls = 15'h0420;
-		ADDIWB:	controls = 15'h0800;
-		JEX:	controls = 15'h4008;
-		default:controls = 15'hxxxx;
+		FETCH:	controls = 18'h05010;
+		DECODE:	controls = 18'h00030;
+		MEMADR:	controls = 18'h00420;
+		MEMRD:	controls = 18'h00100;
+		MEMWB:	controls = 18'h00880;
+		MEMWR:	controls = 18'h02100;
+		RTYPEEX:controls = 18'h00402;
+		RTYPEWB:controls = 18'h00840;
+		BEQEX:	controls = 18'h00605;
+		ADDIEX:	controls = 18'h00420;
+		ADDIWB:	controls = 18'h00800;
+		JEX:	controls = 18'h04008;
+		ANDIEX:	controls = 18'h18420;
+		ORIEX:	controls = 18'h18421;
+		SLTIEX:	controls = 18'h10423;
+		BNEEX:	controls = 18'h20405;
+		default:controls = 18'hxxxxx;
 	endcase
     
 endmodule

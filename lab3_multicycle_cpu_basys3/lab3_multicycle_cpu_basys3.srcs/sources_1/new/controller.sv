@@ -34,14 +34,14 @@ module controller(
 );
 
 	logic [2:0]	aluop;
-	logic branch, pcwrite;
+	logic branch, pcwrite,bne;
 	
 	maindec		md(.clk(clk), .reset(reset), .op(op), .pcwrite(pcwrite), 
 					.memwrite(memwrite), .irwrite(irwrite), .regwrite(regwrite), 
 					.alusrca(alusrca), .branch(branch), .iord(iord), .memtoreg(memtoreg), 
-					.regdst(regdst), .alusrcb(alusrcb), .pcsrc(pcsrc), .aluop(aluop),.immext(immext));
+					.regdst(regdst), .alusrcb(alusrcb), .pcsrc(pcsrc), .aluop(aluop),.immext(immext),.bne(bne));
 	aludec		ad(.funct(funct), .aluop(aluop), .alucontrol(alucontrol));
 	
-	assign pcen = ((branch & zero) | ((op == 6'b000101) & (~zero))) | pcwrite;
+	assign pcen = ((branch & zero) | (bne & (~zero))) | pcwrite;
 
 endmodule

@@ -35,7 +35,8 @@ module datapath(
     logic [31:0] data;
     logic [31:0] rega, wd3, rd1, rd2;
     logic [4:0] writereg,ra1,ra2,wr1,wr2;
-    logic [31:0] ies,ie0,signimm,zeroimm, signimmsh,imm;
+	logic [15:0] ies,ie0;
+    logic [31:0] signimm,zeroimm, signimmsh,imm;
     logic [31:0] srca, srcb, aluresult, aluout;
     
     assign {ra1,ra2} = instr[25:16];
